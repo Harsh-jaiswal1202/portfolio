@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Send, MapPin, Phone, Mail, Github, Linkedin, X, Instagram, Bell, MessageSquare, Paperclip, ArrowUp } from 'lucide-react';
-
-const Contact = () => {
+import { Send, MapPin, Phone, Mail, Github, Linkedin, MessageSquare, Bell } from 'lucide-react';
+import emailjs from '@emailjs/browser'; const Contact = () => {
     const [result, setResult] = React.useState("");
     const [status, setStatus] = React.useState("idle"); // idle, sending, success, error
 
@@ -10,35 +9,48 @@ const Contact = () => {
         event.preventDefault();
         setStatus("sending");
         setResult("Sending....");
-        const formData = new FormData(event.target);
+        const form = event.target;
 
-        // Required by Web3Forms
-        formData.append("access_key", "06cd6a3b-d447-44f5-b8e3-c7caa3dcaa37");
-        formData.append("subject", `New Message from ${formData.get("name")} (Portfolio)`);
-        formData.append("from_name", "Portfolio Contact Form");
-        formData.append("replyto", formData.get("email"));
+        // Variables that map to your EmailJS templates
+        const templateParams = {
+            from_name: form.name.value,
+            reply_to: form.email.value,
+            email: form.email.value,     // Used in the 'To Email' setting
+            message: form.message.value,
+        };
+
+        // EmailJS Configuration
+        const SERVICE_ID = "service_knq4383";
+        const PUBLIC_KEY = "KNaStlsrXE-kVMYZI";
+
+        // Template IDs from your screenshots
+        const TEMPLATE_ID_NOTIFICATION = "template_o29bpki"; // Contact Us
+        const TEMPLATE_ID_AUTOREPLY = "template_9jjrcya";    // Auto-Reply
 
         try {
-            const response = await fetch("https://api.web3forms.com/submit", {
-                method: "POST",
-                body: formData
-            });
+            // 1. Send Notification Email to YOU
+            await emailjs.send(
+                SERVICE_ID,
+                TEMPLATE_ID_NOTIFICATION,
+                templateParams,
+                PUBLIC_KEY
+            );
 
-            const data = await response.json();
+            // 2. Send Auto-Reply Email to the VISITOR
+            await emailjs.send(
+                SERVICE_ID,
+                TEMPLATE_ID_AUTOREPLY,
+                templateParams,
+                PUBLIC_KEY
+            );
 
-            if (data.success) {
-                setStatus("success");
-                setResult("Message Sent Successfully!");
-                event.target.reset();
-            } else {
-                console.log("Error", data);
-                setStatus("error");
-                setResult(data.message);
-            }
+            setStatus("success");
+            setResult("Message Sent Successfully!");
+            form.reset();
         } catch (error) {
             console.error("Submission error", error);
             setStatus("error");
-            setResult("Something went wrong. Please try again.");
+            setResult("Something went wrong. Please check your EmailJS IDs and try again.");
         }
     };
 
