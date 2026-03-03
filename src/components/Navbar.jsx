@@ -60,7 +60,7 @@ const Navbar = () => {
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`flex items-center justify-between w-full max-w-4xl p-1.5 md:p-1.5 rounded-full backdrop-blur-[12px] border transition-all duration-300 ${isScrolled
+        className={`flex items-center justify-between w-full md:w-auto p-1.5 rounded-full backdrop-blur-[12px] border transition-all duration-300 ${isScrolled
           ? 'bg-white/95 dark:bg-slate-900/90 border-slate-200 dark:border-white/10 shadow-xl'
           : 'bg-white/80 dark:bg-black/40 border-slate-200/50 dark:border-white/5'
           }`}
